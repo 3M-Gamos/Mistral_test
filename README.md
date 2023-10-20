@@ -23,3 +23,30 @@ This project involves fine-tuning the Mistral model on a custom dataset using a 
 !pip install -q -U datasets scipy ipywidgets matplotlib
 !pip install FuzzyTM >=0.4.0
 
+## Dataset Preparation
+
+Datasets are loaded from JSON files and prepared for training and evaluation:
+
+```bash
+from datasets import load_dataset
+train_dataset = load_dataset('json', data_files='train_data.jsonl', split='train')
+eval_dataset = load_dataset('json', data_files='val_data.jsonl', split='train')
+
+## Model Preparation
+
+```bash
+import bitsandbytes
+import torch
+from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
+
+base_model_id = "mistralai/Mistral-7B-v0.1"
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_use_double_quant=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.bfloat16
+)
+model = AutoModelForCausalLM.from_pretrained(base_model_id, quantization_config=bnb_config)
+
+
+
